@@ -1,131 +1,114 @@
-# RED4ext
+# RED4ext for macOS
 
-A script extender for REDengine 4 ([Cyberpunk 2077](https://www.cyberpunk.net)).
+A script extender for REDengine 4 ([Cyberpunk 2077](https://www.cyberpunk.net)) — **macOS Apple Silicon Port**.
 
-## Platforms
+> **This is a macOS port** of [RED4ext](https://github.com/WopsS/RED4ext) by WopsS.  
+> For Windows, use the [original repository](https://github.com/WopsS/RED4ext).
 
-| Platform | Architecture | Status |
-|----------|--------------|--------|
-| Windows | x86-64 | ✅ Supported |
-| macOS | ARM64 (Apple Silicon) | ✅ Supported |
+---
 
-## About
+## Status
 
-RED4ext is a library that extends REDengine 4, allowing modders to add new features, modify game behavior, add new scripting functions, or call existing ones in plugins.
+| Feature | Status |
+|---------|--------|
+| Library injection | ✅ Working |
+| Function hooks (9/9) | ✅ Working via Frida |
+| Symbol resolution | ✅ 21,332 symbols |
+| Plugin system | ✅ Ready |
+| REDscript compilation | ✅ Working |
 
-## Features
+**Platform:** macOS 12+ on Apple Silicon (M1/M2/M3)
 
-- **Library Injection** - Automatically loads RED4ext.dylib/dll into the game
-- **Function Hooking** - 9 core hooks for game integration
-- **Plugin System** - Load third-party plugins from `red4ext/plugins/`
-- **REDscript Integration** - Script compilation and validation
-- **Symbol Resolution** - 21,332 exported symbols + 9 internal functions
+---
 
-## Quick Start (macOS)
+## Quick Start
 
 ### One-Command Installation
 
 ```bash
-./scripts/macos_install.sh
+# Clone with submodules
+git clone --recursive https://github.com/memaxo/RED4ext-macos.git
+cd RED4ext-macos
+
+# Build and install
+./scripts/macos_install.sh --build
 ```
 
-### Launch
+### Launch the Game
 
 ```bash
 cd "~/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077"
 ./launch_red4ext.sh
 ```
 
-See [docs/MACOS_PORT.md](docs/MACOS_PORT.md) for detailed instructions.
+---
 
 ## Requirements
 
-### macOS
-- macOS 12+ (Monterey or later)
-- Apple Silicon Mac (M1/M2/M3)
-- Cyberpunk 2077 (Steam version)
-- Xcode Command Line Tools
+- **macOS 12+** (Monterey or later)
+- **Apple Silicon Mac** (M1/M2/M3)
+- **Cyberpunk 2077** (Steam, macOS native version)
+- **Xcode Command Line Tools**: `xcode-select --install`
 
-### Windows
-- Windows 10/11
-- Cyberpunk 2077 (Steam/GOG/Epic)
-- Visual Studio 2022
+---
 
-## Building from Source
+## How It Works
 
-### macOS
-
-```bash
-# Prerequisites
-xcode-select --install
-brew install cmake
-
-# Build (use the macOS fork which includes the compatible SDK)
-git clone --recursive https://github.com/memaxo/RED4ext-macos.git
-cd RED4ext-macos
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j$(sysctl -n hw.ncpu)
-
-# Install
-cd ..
-./scripts/macos_install.sh
-```
-
-> **Note:** The macOS port uses `memaxo/RED4ext.SDK-macos` as a submodule for SDK compatibility.
-
-### Windows
-
-```bash
-git clone --recursive https://github.com/WopsS/RED4ext.git
-cd RED4ext
-mkdir build && cd build
-cmake .. -G "Visual Studio 17 2022"
-cmake --build . --config Release
-```
-
-See [BUILDING.md](BUILDING.md) for detailed instructions.
-
-## Project Structure
+This port uses **Frida Gadget** for function hooking because Apple Silicon enforces W^X (Write XOR Execute) protection that blocks traditional code patching.
 
 ```
-RED4ext/
-├── src/dll/               # Main loader library
-├── scripts/               # Build and installation scripts
-│   ├── macos_install.sh   # One-command macOS setup
-│   └── frida/             # Frida Gadget hooks
-├── docs/                  # Documentation
-│   ├── MACOS_PORT.md      # macOS installation guide
-│   └── api/               # Plugin API docs
-└── deps/                  # Dependencies
-    └── red4ext.sdk/       # SDK (submodule)
+launch_red4ext.sh
+├── DYLD_INSERT_LIBRARIES=RED4ext.dylib:FridaGadget.dylib
+├── FridaGadget loads red4ext_hooks.js
+├── Frida installs 9 hooks via JIT trampolines
+└── RED4ext loads plugins from red4ext/plugins/
 ```
+
+See [docs/FRIDA_INTEGRATION.md](docs/FRIDA_INTEGRATION.md) for technical details.
+
+---
 
 ## Documentation
 
 | Document | Description |
 |----------|-------------|
-| [docs/MACOS_PORT.md](docs/MACOS_PORT.md) | macOS installation & usage |
+| [docs/MACOS_PORT.md](docs/MACOS_PORT.md) | Full installation guide |
+| [docs/FRIDA_INTEGRATION.md](docs/FRIDA_INTEGRATION.md) | Frida hooking details |
 | [BUILDING.md](BUILDING.md) | Build from source |
 | [scripts/README.md](scripts/README.md) | Script reference |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
+
+---
+
+## Project Structure
+
+```
+RED4ext-macos/
+├── src/dll/                # Main loader library
+│   └── Platform/           # macOS-specific code
+├── scripts/
+│   ├── macos_install.sh    # One-command setup
+│   └── frida/              # Frida hooks
+├── docs/                   # Documentation
+└── deps/
+    └── red4ext.sdk/        # SDK submodule (memaxo/RED4ext.SDK-macos)
+```
+
+---
 
 ## Related Projects
 
-- [RED4ext.SDK](https://github.com/WopsS/RED4ext.SDK) - SDK for plugin development
-- [redscript](https://github.com/jac3km4/redscript) - Scripting language compiler
-- [Cyber Engine Tweaks](https://github.com/yamashi/CyberEngineTweaks) - Lua scripting
+- [RED4ext](https://github.com/WopsS/RED4ext) — Original Windows version
+- [RED4ext.SDK](https://github.com/WopsS/RED4ext.SDK) — Original SDK (Windows)
+- [RED4ext.SDK-macos](https://github.com/memaxo/RED4ext.SDK-macos) — macOS SDK fork (used by this repo)
 
-## Contributing
-
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
+---
 
 ## License
 
-This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md).
+MIT License — see [LICENSE.md](LICENSE.md)
 
 ## Acknowledgments
 
-- **WopsS** - Original RED4ext author
-- **Frida** - Dynamic instrumentation toolkit
+- **WopsS** — Original RED4ext author
+- **Frida** — Dynamic instrumentation toolkit
 - **Cyberpunk 2077 modding community**
