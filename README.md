@@ -60,9 +60,9 @@ See [docs/MACOS_PORT.md](docs/MACOS_PORT.md) for detailed instructions.
 xcode-select --install
 brew install cmake
 
-# Build
-git clone --recursive https://github.com/WopsS/RED4ext.git
-cd RED4ext
+# Build (use the macOS fork which includes the compatible SDK)
+git clone --recursive https://github.com/memaxo/RED4ext-macos.git
+cd RED4ext-macos
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j$(sysctl -n hw.ncpu)
@@ -71,6 +71,8 @@ make -j$(sysctl -n hw.ncpu)
 cd ..
 ./scripts/macos_install.sh
 ```
+
+> **Note:** The macOS port uses `memaxo/RED4ext.SDK-macos` as a submodule for SDK compatibility.
 
 ### Windows
 

@@ -109,12 +109,11 @@ Frida bypasses this by:
 ### Building from Source
 
 ```bash
-# Clone repositories
-git clone https://github.com/WopsS/RED4ext.git
-git clone https://github.com/WopsS/RED4ext.SDK.git RED4ext/deps/red4ext.sdk
+# Clone the macOS fork (includes SDK as submodule)
+git clone --recursive https://github.com/memaxo/RED4ext-macos.git
+cd RED4ext-macos
 
 # Build
-cd RED4ext
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j$(sysctl -n hw.ncpu)
@@ -123,6 +122,8 @@ make -j$(sysctl -n hw.ncpu)
 cd ..
 ./scripts/macos_install.sh
 ```
+
+> **Important:** Use `--recursive` to fetch the macOS-compatible SDK submodule (`memaxo/RED4ext.SDK-macos`).
 
 ### Manual Installation
 

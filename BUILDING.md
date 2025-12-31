@@ -1,20 +1,26 @@
-# Building RED4ext for macOS
+# Building RED4ext
 
-## Prerequisites
+## Platforms
 
-### Required Tools
-- **macOS 13.0+** (Ventura or later)
+| Platform | Architecture | Status |
+|----------|--------------|--------|
+| Windows | x86-64 | ✅ Supported |
+| macOS | ARM64 (Apple Silicon) | ✅ Supported |
+
+---
+
+## macOS Build Instructions
+
+### Prerequisites
+
+- **macOS 12+** (Monterey or later)
 - **Xcode Command Line Tools**
 - **CMake 3.23+**
-- **Python 3.6+** (for address generation scripts)
-
-### Install Dependencies
+- **Python 3.8+** (for address generation scripts)
 
 ```bash
-# Install Xcode Command Line Tools
+# Install prerequisites
 xcode-select --install
-
-# Install CMake (via Homebrew)
 brew install cmake
 
 # Verify installations
@@ -22,17 +28,19 @@ cmake --version
 python3 --version
 ```
 
-## Building
+### Clone Repository
 
-### 1. Clone Repository
+**Important:** The macOS port uses a modified SDK. Use the `--recursive` flag to fetch all submodules:
 
 ```bash
-git clone --recursive https://github.com/your-fork/RED4ext-macOS.git
-cd RED4ext-macOS
+git clone --recursive https://github.com/memaxo/RED4ext-macos.git
+cd RED4ext-macos
 
-# If you forgot --recursive
+# If you forgot --recursive, or submodules are out of date:
 git submodule update --init --recursive
 ```
+
+> **Note:** The `deps/red4ext.sdk` submodule should point to `memaxo/RED4ext.SDK-macos` which contains macOS compatibility changes.
 
 ### 2. Configure and Build
 
@@ -170,8 +178,53 @@ codesign -s "Developer ID Application: Your Name" \
 | Symbol resolution | GetProcAddress | dlsym |
 | Thread-local storage | `__declspec(thread)` | `thread_local` |
 
+---
+
+## Windows Build Instructions
+
+### Prerequisites
+
+- **Windows 10/11**
+- **Visual Studio 2022** with C++ workload
+- **CMake 3.23+**
+
+### Clone and Build
+
+```bash
+git clone --recursive https://github.com/WopsS/RED4ext.git
+cd RED4ext
+mkdir build && cd build
+cmake .. -G "Visual Studio 17 2022"
+cmake --build . --config Release
+```
+
+---
+
+## Submodule Structure
+
+The project uses git submodules for dependencies:
+
+| Submodule | Windows URL | macOS URL |
+|-----------|-------------|-----------|
+| `deps/red4ext.sdk` | `WopsS/RED4ext.SDK` | `memaxo/RED4ext.SDK-macos` |
+| `deps/fishhook` | (not used) | `facebook/fishhook` |
+| `deps/spdlog` | `gabime/spdlog` | same |
+| `deps/fmt` | `fmtlib/fmt` | same |
+
+**For macOS users:** Ensure your `deps/red4ext.sdk` points to the macOS-compatible fork:
+
+```bash
+# Check current submodule URL
+git config --file=.gitmodules submodule.deps/red4ext.sdk.url
+
+# Should show: https://github.com/memaxo/RED4ext.SDK-macos
+```
+
+---
+
 ## See Also
 
+- [docs/MACOS_PORT.md](docs/MACOS_PORT.md) - macOS installation guide
 - [scripts/README.md](scripts/README.md) - Address generation tools
 - [scripts/REVERSE_ENGINEERING_GUIDE.md](scripts/REVERSE_ENGINEERING_GUIDE.md) - Finding function addresses
 - [docs/porting/](docs/porting/) - Port development history

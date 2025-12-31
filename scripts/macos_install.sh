@@ -78,6 +78,16 @@ check_prerequisites() {
         log_warn "Not running on Apple Silicon - hooks may not work"
     fi
     
+    # Check SDK submodule exists
+    if [[ ! -d "$RED4EXT_ROOT/deps/red4ext.sdk/include" ]]; then
+        log_warn "SDK submodule not found - initializing submodules..."
+        (cd "$RED4EXT_ROOT" && git submodule update --init --recursive) || {
+            log_error "Failed to initialize submodules"
+            log_info "Run: git submodule update --init --recursive"
+            exit 1
+        }
+    fi
+    
     # Check for required tools
     local missing=()
     command -v curl &>/dev/null || missing+=("curl")
