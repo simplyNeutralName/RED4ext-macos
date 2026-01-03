@@ -37,22 +37,18 @@ This is the initial macOS release. **Not all features have full parity with Wind
 - **Apple Silicon** (M1/M2/M3/M4)
 - **Cyberpunk 2077** (Steam, macOS native version)
 - **Xcode Command Line Tools**: `xcode-select --install`
+- **CMake 3.23+** (for building): `brew install cmake`
 
 **Game Version:** Tested with Cyberpunk 2077 v2.3.1 (macOS)
 
 ---
 
-## Download
-
-Download from [Releases](../../releases):
-
-- `RED4ext-macOS-ARM64-vX.X.X.zip` — Full release package
-
----
-
 ## Installation
 
-### Quick Install
+### Option 1: Download Release (Easiest)
+
+1. Download from [Releases](../../releases)
+2. Extract and install:
 
 ```bash
 unzip RED4ext-macOS-ARM64-vX.X.X.zip
@@ -60,21 +56,50 @@ cd RED4ext-macOS-ARM64-vX.X.X
 ./scripts/macos_install.sh
 ```
 
-### Build from Source
+### Option 2: Build from Source
 
 ```bash
+# 1. Clone with submodules (--recursive is required!)
 git clone --recursive https://github.com/memaxo/RED4ext.git
 cd RED4ext
+
+# 2. Check requirements
+./scripts/check_requirements.sh
+
+# 3. Build
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j$(sysctl -n hw.ncpu)
-cd .. && ./scripts/macos_install.sh
+
+# 4. Install
+cd ..
+./scripts/macos_install.sh
 ```
 
-### Launch
+### If Submodules Are Missing
 
 ```bash
-"~/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077/launch_red4ext.sh"
+# If you didn't use --recursive, run this:
+git submodule update --init --recursive
+```
+
+### Launch the Game
+
+```bash
+"$HOME/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077/launch_red4ext.sh"
+```
+
+Or launch via Steam (mods load automatically).
+
+### Installation Options
+
+```bash
+./scripts/macos_install.sh --help
+
+Options:
+  --game-dir PATH    Specify game location (if not default Steam path)
+  --build            Build from source before installing
+  --skip-frida       Don't install Frida Gadget
 ```
 
 ---
