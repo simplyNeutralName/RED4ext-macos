@@ -49,6 +49,7 @@ cp "$SCRIPT_DIR/cyberpunk2077_addresses.json" "$RELEASE_DIR/$RELEASE_NAME/red4ex
 
 # Copy essential scripts
 cp "$SCRIPT_DIR/macos_install.sh" "$RELEASE_DIR/$RELEASE_NAME/scripts/"
+cp "$SCRIPT_DIR/check_requirements.sh" "$RELEASE_DIR/$RELEASE_NAME/scripts/"
 cp "$SCRIPT_DIR/macos_resign_for_hooks.sh" "$RELEASE_DIR/$RELEASE_NAME/scripts/"
 cp "$SCRIPT_DIR/macos_resign_backup.sh" "$RELEASE_DIR/$RELEASE_NAME/scripts/"
 cp "$SCRIPT_DIR/macos_resign_restore.sh" "$RELEASE_DIR/$RELEASE_NAME/scripts/"
