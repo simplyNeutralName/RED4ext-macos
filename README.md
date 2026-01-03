@@ -83,13 +83,50 @@ cd ..
 git submodule update --init --recursive
 ```
 
-### Launch the Game
+---
 
+## Launching the Game
+
+After installation, you have two options:
+
+### Option 1: Launch Script (Recommended)
+
+```bash
+cd "$HOME/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077"
+./launch_red4ext.sh
+```
+
+Or with the full path:
 ```bash
 "$HOME/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077/launch_red4ext.sh"
 ```
 
-Or launch via Steam (mods load automatically).
+**What the launcher does:**
+1. Sets `DYLD_INSERT_LIBRARIES` to load RED4ext and Frida
+2. Compiles any REDscript mods (if present)
+3. Launches Cyberpunk 2077 with mods enabled
+
+### Option 2: Launch via Steam
+
+You can also launch directly from Steam. The mods will load automatically if the installation was successful.
+
+**Note:** Some users report better stability using the launch script.
+
+### Verifying Mods Loaded
+
+After launching, check:
+1. **Log file:** `red4ext/logs/red4ext.log` should show plugins loading
+2. **In-game:** Mod effects should be visible (e.g., TweakXL tweaks applied)
+
+### If Mods Don't Load
+
+```bash
+# Check RED4ext log for errors
+cat "$HOME/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077/red4ext/logs/red4ext.log"
+
+# Verify launch script exists and is executable
+ls -la "$HOME/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077/launch_red4ext.sh"
+```
 
 ### Installation Options
 

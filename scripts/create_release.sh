@@ -69,9 +69,9 @@ cat > "$RELEASE_DIR/$RELEASE_NAME/INSTALL.md" << 'EOF'
 
 ## Prerequisites
 
-1. Cyberpunk 2077 installed via Steam on macOS
-2. Python 3.10+ (for address generation scripts)
-3. Xcode Command Line Tools: `xcode-select --install`
+- Cyberpunk 2077 installed via Steam on macOS
+- macOS 12+ on Apple Silicon (M1/M2/M3/M4)
+- Xcode Command Line Tools: `xcode-select --install`
 
 ## Quick Install
 
@@ -83,35 +83,76 @@ cd scripts
 This will:
 1. Detect your Cyberpunk 2077 installation
 2. Copy RED4ext files to the game directory
-3. Set up Frida Gadget for hooking
-4. Resign the game binary for mod support
+3. Download and install Frida Gadget (~50MB)
+4. Create the `launch_red4ext.sh` script
+5. Set up plugin directories
 
-## Manual Installation
+## Launching the Game
 
-1. Copy `red4ext/` folder to your Cyberpunk 2077 directory
-2. Run `scripts/macos_resign_for_hooks.sh` to sign the binary
-3. Launch the game
+### Option 1: Launch Script (Recommended)
 
-## Launching with Mods
-
-Use the launch script created by the installer:
 ```bash
-"/path/to/Cyberpunk 2077/launch_red4ext.sh"
+cd "$HOME/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077"
+./launch_red4ext.sh
 ```
+
+Or with full path:
+```bash
+"$HOME/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077/launch_red4ext.sh"
+```
+
+### Option 2: Launch via Steam
+
+Launch normally from Steam. Mods load automatically.
+
+## Verify Installation
+
+After launching, check that mods loaded:
+
+```bash
+# View RED4ext log
+cat "$HOME/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077/red4ext/logs/red4ext.log"
+```
+
+You should see:
+```
+[RED4ext] Initializing...
+[RED4ext] Loading plugins...
+```
+
+## Installing Plugins
+
+Place .dylib plugins in:
+```
+Cyberpunk 2077/red4ext/plugins/PluginName/PluginName.dylib
+```
+
+**Note:** Windows .dll plugins won't work - they must be recompiled for macOS.
 
 ## Troubleshooting
 
-- Check `red4ext/logs/` for error messages
-- Ensure Frida Gadget is properly signed
-- Verify addresses match your game version
+### Mods not loading
+- Check `red4ext/logs/red4ext.log` for errors
+- Verify `launch_red4ext.sh` exists and is executable
+- Re-run `./scripts/macos_install.sh`
 
-## Updating Addresses After Game Update
-
-If the game updates, regenerate addresses:
+### "Library not loaded" errors
 ```bash
-python3 scripts/generate_addresses.py "/path/to/Cyberpunk2077" \
+./scripts/macos_resign_for_hooks.sh
+```
+
+### Game crashes on launch
+- Check if addresses need regeneration (after game update)
+- Disable plugins one by one to find conflicts
+
+## After Game Update
+
+Regenerate addresses:
+```bash
+python3 scripts/generate_addresses.py \
+    "$HOME/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077/Cyberpunk2077.app/Contents/MacOS/Cyberpunk2077" \
     --manual scripts/manual_addresses_template.json \
-    --output red4ext/cyberpunk2077_addresses.json
+    --output "$HOME/Library/Application Support/Steam/steamapps/common/Cyberpunk 2077/red4ext/bin/x64/cyberpunk2077_addresses.json"
 ```
 EOF
 
